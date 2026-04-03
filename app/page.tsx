@@ -77,7 +77,8 @@ export default function QuantumAISandbox() {
     }
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [cursorX, cursorY])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Intersection observer for scene detection
   useEffect(() => {
@@ -121,16 +122,18 @@ export default function QuantumAISandbox() {
       {/* Custom Cursor */}
       {initiated && (
         <motion.div
-          className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-white/80 pointer-events-none z-[9999] mix-blend-difference"
+          className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] mix-blend-difference"
           style={{
             x: springX,
             y: springY,
             translateX: "-50%",
             translateY: "-50%",
+            border: "2px solid rgba(255,255,255,0.8)",
           }}
         >
           <motion.div
-            className="absolute inset-1 rounded-full bg-white/30"
+            className="absolute inset-1 rounded-full"
+            style={{ backgroundColor: "rgba(255,255,255,0.3)" }}
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
@@ -147,12 +150,17 @@ export default function QuantumAISandbox() {
           >
             <motion.button
               onClick={handleInitiate}
-              className="relative px-10 py-5 text-lg font-mono tracking-[0.3em] text-white/90 uppercase border border-white/30 bg-transparent cursor-pointer overflow-hidden group"
+              className="relative px-10 py-5 text-lg font-mono tracking-[0.3em] uppercase bg-transparent cursor-pointer overflow-hidden group"
+              style={{
+                color: "rgba(255,255,255,0.9)",
+                border: "1px solid rgba(255,255,255,0.3)",
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
             >
               <motion.div
-                className="absolute inset-0 bg-white/10"
+                className="absolute inset-0"
+                style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                 initial={{ x: "-100%" }}
                 whileHover={{ x: "0%" }}
                 transition={{ duration: 0.3 }}
@@ -181,15 +189,16 @@ export default function QuantumAISandbox() {
           {scenes.map((scene, i) => (
             <motion.div
               key={scene.id}
-              className={`w-3 h-3 rounded-full backdrop-blur-sm cursor-pointer transition-all duration-300 ${
-                activeScene === i
-                  ? "bg-white scale-125"
-                  : "bg-white/30 hover:bg-white/50"
-              }`}
+              className="w-3 h-3 rounded-full backdrop-blur-sm cursor-pointer transition-all duration-300"
+              style={{
+                backgroundColor: activeScene === i ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.3)",
+                transform: activeScene === i ? "scale(1.25)" : "scale(1)",
+              }}
               onClick={() => {
                 sceneRefs.current[i]?.scrollIntoView({ behavior: "smooth" })
               }}
-              whileHover={{ scale: 1.3 }}
+              whileHover={{ scale: 1.3, backgroundColor: "rgba(255,255,255,0.5)" }}
+              initial={{ backgroundColor: activeScene === i ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.3)" }}
               title={scene.name}
             />
           ))}
@@ -200,8 +209,12 @@ export default function QuantumAISandbox() {
       {initiated && (
         <motion.button
           onClick={toggleMute}
-          className="fixed top-6 right-6 z-40 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors"
-          whileHover={{ scale: 1.1 }}
+          className="fixed top-6 right-6 z-40 w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center cursor-pointer transition-colors"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
+          whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
           whileTap={{ scale: 0.95 }}
         >
           {isMuted ? (
@@ -368,11 +381,12 @@ const Scene2 = forwardRef<HTMLDivElement>((_, ref) => {
 
       {/* Glass card */}
       <motion.div
-        className="relative z-10 max-w-2xl p-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl"
+        className="relative z-10 max-w-2xl p-10 bg-white/5 backdrop-blur-xl rounded-2xl"
+        style={{ border: "1px solid rgba(255,255,255,0.1)" }}
         onHoverStart={() => setIsHovering(true)}
         onHoverEnd={() => setIsHovering(false)}
         whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.3)" }}
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 50, borderColor: "rgba(255,255,255,0.1)" }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
@@ -857,9 +871,10 @@ const Scene7 = forwardRef<HTMLDivElement>((_, ref) => {
         {nodes.map((node) => (
           <motion.div
             key={node.id}
-            className="absolute w-24 h-24 -ml-12 -mt-12 rounded-full bg-blue-500/20 border border-blue-400/50 flex items-center justify-center cursor-grab active:cursor-grabbing backdrop-blur-sm"
-            style={{ left: node.x, top: node.y }}
+            className="absolute w-24 h-24 -ml-12 -mt-12 rounded-full bg-blue-500/20 flex items-center justify-center cursor-grab active:cursor-grabbing backdrop-blur-sm"
+            style={{ left: node.x, top: node.y, border: "1px solid rgba(96, 165, 250, 0.5)" }}
             onMouseDown={(e) => handleMouseDown(node.id, e)}
+            initial={{ borderColor: "rgba(96, 165, 250, 0.5)" }}
             whileHover={{ scale: 1.1, borderColor: "rgba(59, 130, 246, 1)" }}
             animate={{
               x: dragging === node.id ? 0 : 0,
@@ -910,7 +925,8 @@ const Scene8 = forwardRef<HTMLDivElement, { onRestart: () => void }>(
               return (
                 <motion.div
                   key={`h-${i}`}
-                  className="absolute left-1/2 top-1/2 rounded-full border border-white/30"
+                  className="absolute left-1/2 top-1/2 rounded-full"
+                  style={{ border: "1px solid rgba(255,255,255,0.3)" }}
                   style={{
                     width: `${scale * 100}%`,
                     height: `${scale * 100}%`,
@@ -935,7 +951,8 @@ const Scene8 = forwardRef<HTMLDivElement, { onRestart: () => void }>(
             {[...Array(6)].map((_, i) => (
               <motion.div
                 key={`v-${i}`}
-                className="absolute left-1/2 top-1/2 w-full h-full rounded-full border border-white/20"
+                className="absolute left-1/2 top-1/2 w-full h-full rounded-full"
+                style={{ border: "1px solid rgba(255,255,255,0.2)" }}
                 style={{
                   transform: `translate(-50%, -50%) rotateY(${i * 30}deg)`,
                 }}
@@ -946,7 +963,8 @@ const Scene8 = forwardRef<HTMLDivElement, { onRestart: () => void }>(
 
         {/* Glow effect */}
         <motion.div
-          className="absolute w-[200px] h-[200px] rounded-full bg-white/10 blur-[100px]"
+          className="absolute w-[200px] h-[200px] rounded-full blur-[100px]"
+          style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.3, 0.6, 0.3],
