@@ -329,7 +329,7 @@ const Scene2 = forwardRef<HTMLDivElement>((_, ref) => {
   const [isHovering, setIsHovering] = useState(false)
   const [dataGrid, setDataGrid] = useState<string[]>([])
 
-  const generateData = useCallback(() => {
+  const generateDataRef = useRef(() => {
     const chars = "01"
     const newData: string[] = []
     for (let i = 0; i < 200; i++) {
@@ -340,19 +340,19 @@ const Scene2 = forwardRef<HTMLDivElement>((_, ref) => {
       newData.push(line)
     }
     return newData
-  }, [])
+  })
 
   useEffect(() => {
-    setDataGrid(generateData())
-  }, [generateData])
+    setDataGrid(generateDataRef.current())
+  }, [])
 
   useEffect(() => {
     if (!isHovering) return
     const interval = setInterval(() => {
-      setDataGrid(generateData())
+      setDataGrid(generateDataRef.current())
     }, 100)
     return () => clearInterval(interval)
-  }, [isHovering, generateData])
+  }, [isHovering])
 
   return (
     <div
@@ -552,11 +552,14 @@ const Scene4 = forwardRef<HTMLDivElement>((_, ref) => {
 Scene4.displayName = "Scene4"
 
 // Scene 5: The Hallucination
+const GLITCH_FONTS = ["font-mono", "font-serif", "font-sans", "italic", "font-bold"] as const
+
 const Scene5 = forwardRef<
   HTMLDivElement,
   { cursorPos: { x: number; y: number } }
 >(({ cursorPos }, ref) => {
   const [textOffset, setTextOffset] = useState({ x: 0, y: 0 })
+  const [currentFont, setCurrentFont] = useState(0)
   const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -584,21 +587,12 @@ const Scene5 = forwardRef<
     }
   }, [cursorPos])
 
-  const glitchFonts = [
-    "font-mono",
-    "font-serif",
-    "font-sans",
-    "italic",
-    "font-bold",
-  ]
-  const [currentFont, setCurrentFont] = useState(0)
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentFont(Math.floor(Math.random() * glitchFonts.length))
+      setCurrentFont(Math.floor(Math.random() * GLITCH_FONTS.length))
     }, 200)
     return () => clearInterval(interval)
-  }, [glitchFonts.length])
+  }, [])
 
   return (
     <div
@@ -641,14 +635,14 @@ const Scene5 = forwardRef<
         transition={{ type: "spring", stiffness: 100, damping: 10 }}
       >
         <motion.span
-          className={`text-red-400 text-sm tracking-widest ${glitchFonts[currentFont]}`}
+          className={`text-red-400 text-sm tracking-widest ${GLITCH_FONTS[currentFont]}`}
           animate={{ skewX: [-5, 5, -5] }}
           transition={{ duration: 0.1, repeat: Infinity }}
         >
           SC3N3 04
         </motion.span>
         <motion.h2
-          className={`mt-4 text-4xl md:text-5xl tracking-tight text-white ${glitchFonts[currentFont]}`}
+          className={`mt-4 text-4xl md:text-5xl tracking-tight text-white ${GLITCH_FONTS[currentFont]}`}
           animate={{
             textShadow: [
               "2px 0 red, -2px 0 cyan",
